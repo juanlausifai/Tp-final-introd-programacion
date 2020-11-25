@@ -84,7 +84,7 @@ function seleccionarOpcion(){
    
    /*>>> Además controlar que la opción elegida es válida. Puede que el usuario se equivoque al elegir una opción <<<*/
    
-   echo "--------------------------------------------------------------\n";  
+   echo "\n--------------------------------------------------------------\n";  
 
    while ($opcionValida == false) {
       
@@ -157,7 +157,7 @@ function insertarPalabra($coleccionPalabras){
     while ($existe == true) {
         
         echo "Ingrese una palabra: "."\n";
-        $palabra = trim(fgets(STDIN));
+        $palabra = strtolower(trim(fgets(STDIN)));
     
         $existe = existePalabra($coleccionPalabras,$palabra);
         
@@ -449,17 +449,19 @@ function indiceMayorPuntaje($coleccionJuegos)
 function indiceSuperaPuntaje($coleccionJuegos,$puntaje){
     
     $indice = -1;
+    $puntajeParcial = 9999999;
     
     foreach ($coleccionJuegos as $key => $value) {
         
-        if ($value["puntos"] > $puntaje) {
+        if ($value["puntos"] > $puntaje && $puntajeParcial > $value["puntos"] ) {
            
+           $puntajeParcial = $value["puntos"];
            $indice = $key; 
-           return $indice;
+          
         }
 
     }
-
+    
     return $indice; 
 
 }
@@ -473,7 +475,7 @@ function indiceSuperaPuntaje($coleccionJuegos,$puntaje){
 
 function ordenarPalabrasAlfabeticamente($coleccionPalabras){
 
-    sort($coleccionPalabras);
+    arsort($coleccionPalabras);
 
     print_r($coleccionPalabras);
 
@@ -517,14 +519,25 @@ do{
         break;
     case 4: //Mostrar la información completa de un número de juego
         
+        $datoCorrecto = false;
         $cantJuegos = count($coleccionJuegos)-1;
-        echo "Seleccione un indice entre 0 y ".$cantJuegos.": ";
-        $indiceJuego = trim(fgets(STDIN));
-        mostrarJuego($coleccionJuegos,$coleccionPalabras,$indiceJuego);
+
+        while (!$datoCorrecto) {
+            echo "Seleccione un indice entre 0 y ".$cantJuegos.": ";
+            $indiceJuego = trim(fgets(STDIN));
+            if($indiceJuego >= 0 && $indiceJuego <= $cantJuegos){
+                mostrarJuego($coleccionJuegos,$coleccionPalabras,$indiceJuego);
+            }
+            else{
+                echo "Error!, debe seleccionar un indice entre 0 y ".$cantJuegos."\n";
+            }
+            $datoCorrecto = $indiceJuego >= 0 && $indiceJuego <= $cantJuegos;
+        }
+
         
         break;
     case 5: //Mostrar la información completa del primer juego con más puntaje
-
+        
         $indiceMayor = indiceMayorPuntaje($coleccionJuegos);
         mostrarJuego($coleccionJuegos,$coleccionPalabras,$indiceMayor);
 
