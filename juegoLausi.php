@@ -202,7 +202,7 @@ function solicitarIndiceEntre($min,$max){
     do{
         echo "Seleccione un valor entre $min y $max: ";
         $i = trim(fgets(STDIN));
-    }while(!($i>=$min && $i<=$max));
+    }while(!($i>=$min && $i<=$max && is_numeric($i)));
     
     return $i;
 }
@@ -447,7 +447,8 @@ function indiceMayorPuntaje($coleccionJuegos)
  */
 
 function indiceSuperaPuntaje($coleccionJuegos,$puntaje){
-    
+    // integer $puntajeParcial
+
     $indice = -1;
     $puntajeParcial = 9999999;
     
@@ -475,8 +476,10 @@ function indiceSuperaPuntaje($coleccionJuegos,$puntaje){
 
 function ordenarPalabrasAlfabeticamente($coleccionPalabras){
 
+    //Ordena un array en orden inverso y mantiene la asociación de índices
     arsort($coleccionPalabras);
 
+    // muestra información sobre una variable en una forma que es legible por humanos.
     print_r($coleccionPalabras);
 
 }
@@ -487,6 +490,12 @@ function ordenarPalabrasAlfabeticamente($coleccionPalabras){
 /************** PROGRAMA PRINCIPAL *********/
 /*******************************************/
 define("CANT_INTENTOS", 6); //Constante en php para cantidad de intentos que tendrá el jugador para adivinar la palabra.
+
+/**
+ * array $coleccionPalabras, $coleccionJuegos
+ * integer $min, $max, $opcion, $indice, $puntaje, $cantJuegos, $indiceMayor
+ * boolean $datoCorrecto, $esNumero 
+ */
 
 $coleccionPalabras = cargarPalabras();
 $coleccionJuegos = cargarJuegos();
@@ -525,13 +534,13 @@ do{
         while (!$datoCorrecto) {
             echo "Seleccione un indice entre 0 y ".$cantJuegos.": ";
             $indiceJuego = trim(fgets(STDIN));
-            if($indiceJuego >= 0 && $indiceJuego <= $cantJuegos){
+            if($indiceJuego >= 0 && $indiceJuego <= $cantJuegos && is_numeric($indiceJuego)){
                 mostrarJuego($coleccionJuegos,$coleccionPalabras,$indiceJuego);
             }
             else{
                 echo "Error!, debe seleccionar un indice entre 0 y ".$cantJuegos."\n";
             }
-            $datoCorrecto = $indiceJuego >= 0 && $indiceJuego <= $cantJuegos;
+            $datoCorrecto = $indiceJuego >= 0 && $indiceJuego <= $cantJuegos && is_numeric($indiceJuego);
         }
 
         
@@ -544,8 +553,20 @@ do{
         break;
     case 6: //Mostrar la información completa del primer juego que supere un puntaje indicado por el usuario
         
-        echo "Seleccione un puntaje: ";
-        $puntaje = trim(fgets(STDIN));
+        $esNumero = false;
+        
+        while (!$esNumero) {
+            echo "Seleccione un puntaje: ";
+            $puntaje = trim(fgets(STDIN));
+
+            $esNumero = is_numeric($puntaje);
+
+            if ($esNumero == false) {
+                echo "Error! Ingrese un numero \n";
+            }
+            
+        }
+        
         $indiceSuperaPun = indiceSuperaPuntaje($coleccionJuegos,$puntaje);
         
         if ($indiceSuperaPun != -1) {
