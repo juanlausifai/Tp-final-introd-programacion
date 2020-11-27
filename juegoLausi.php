@@ -32,7 +32,7 @@ function cargarPalabras(){
 function cargarJuegos(){
 	$coleccionJuegos = array();
 	$coleccionJuegos[0] = array("puntos"=> 0, "indicePalabra" => 1);
-	$coleccionJuegos[1] = array("puntos"=> 10,"indicePalabra" => 2);
+	$coleccionJuegos[1] = array("puntos"=> 6,"indicePalabra" => 2);
     $coleccionJuegos[2] = array("puntos"=> 0, "indicePalabra" => 1);
     $coleccionJuegos[3] = array("puntos"=> 8, "indicePalabra" => 0);
     $coleccionJuegos[4] = array("puntos"=> 10, "indicePalabra" => 6);
@@ -215,16 +215,13 @@ function solicitarIndiceEntre($min,$max){
 * @return boolean $seDescubrio
 */
 function palabraDescubierta($coleccionLetras){
-   
+   //Corregir punto implementar recorrido parcial 1 return
     $seDescubrio = true;
     
-    foreach ($coleccionLetras as $key => $value) {
-        
-        if( $value["descubierta"] == false){
-            $seDescubrio = false;
-            return $seDescubrio;
-        }
-
+    for ($i=0; $i < count($coleccionLetras) && $seDescubrio ; $i++) { 
+       
+        $seDescubrio = $coleccionLetras[$i]["descubierta"];
+             
     }
 
     return $seDescubrio;
@@ -311,11 +308,11 @@ function stringLetrasDescubiertas($coleccionLetras){
 * @return int $puntaje 
 */
 function jugar($coleccionPalabras, $indicePalabra, $cantIntentos){
-    $pal = $coleccionPalabras[$indicePalabra]["palabra"];
+    $pal = $coleccionPalabras[$indicePalabra]["palabra"];//palabra con la que voy a jugar
     $coleccionLetras = dividirPalabraEnLetras($pal);//genera el arreglo $coleccionLetras
     //print_r($coleccionLetras);
     $puntaje = 0;
-    $pista = $coleccionPalabras[$indicePalabra]["pista"];
+    $pista = $coleccionPalabras[$indicePalabra]["pista"];//pista de la palabra
     
     //Mostrar pista:
 
@@ -325,7 +322,7 @@ function jugar($coleccionPalabras, $indicePalabra, $cantIntentos){
 
     $palabraFueDescubierta = false;
 
-    while ($cantIntentos > 0 && $palabraFueDescubierta == false) {
+    while ($cantIntentos > 0 && !$palabraFueDescubierta) {
         
         $letra = solicitarLetra();
 
@@ -453,7 +450,8 @@ function indiceSuperaPuntaje($coleccionJuegos,$puntaje){
     $puntajeParcial = 9999999;
     
     foreach ($coleccionJuegos as $key => $value) {
-        
+        //si $value["puntos"] se encuentra entre $puntaje y $puntajeParcial ($value["puntos"]>$puntaje y $value["puntos"]<$puntajeParcial )
+        //ej: [9,16,10,18,17],1°)$puntaje= 16 => $puntajeParcial=18, 2°) $puntajeParcial=17(return 17)
         if ($value["puntos"] > $puntaje && $puntajeParcial > $value["puntos"] ) {
            
            $puntajeParcial = $value["puntos"];
@@ -535,7 +533,9 @@ do{
             echo "Seleccione un indice entre 0 y ".$cantJuegos.": ";
             $indiceJuego = trim(fgets(STDIN));
             if($indiceJuego >= 0 && $indiceJuego <= $cantJuegos && is_numeric($indiceJuego)){
+               $indiceJuego=(int)$indiceJuego;
                 mostrarJuego($coleccionJuegos,$coleccionPalabras,$indiceJuego);
+
             }
             else{
                 echo "Error!, debe seleccionar un indice entre 0 y ".$cantJuegos."\n";
